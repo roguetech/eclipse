@@ -26,19 +26,19 @@ public class ButtonEvents extends Frame implements ActionListener {
 
 	//@Override
 	public void actionPerformed(ActionEvent e) {
+		String text = f.getText();
 		if (e.getActionCommand().equals("To Uppercase")) {
-			String text = f.getText();
 			System.out.println(text);
 			f.setText(text.toUpperCase());
 		} else if (e.getActionCommand().equals("To Lowercase")) {
-			f.setText("2");
+			f.setText(text.toLowerCase());
 		}
 		
 	}
 	
 	public static void main(String[] args) {
 		new ButtonEvents();
-
+		new Multi();
 	}
 
 }
