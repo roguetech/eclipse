@@ -1,0 +1,15 @@
+import java.awt.*;
+	
+public class ComponentApplication extends Frame {
+	public ComponentApplication() {
+		super("Hello World");
+			
+		this.setVisible(true);
+	}
+
+	public static void main(String[] args) {
+		new ComponentApplication();
+
+	}
+
+}
