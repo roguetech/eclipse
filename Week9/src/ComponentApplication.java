@@ -35,6 +35,7 @@ public class ComponentApplication extends Frame {
 	}
 
 	public static void main(String[] args) {
-		new ComponentApplication();
+		//new ComponentApplication();	
+		new counter();
 	}
 }
