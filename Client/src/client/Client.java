@@ -40,6 +40,12 @@ public class Client {
         }
 		return true;
     }
+    
+    void sendCommand() {
+    	String test = "test command";
+    	System.out.println("test command");
+    	this.send(test);
+    }
 
     void getDate() {
     	String theDateCommand = "GetDate", theDateAndTime;

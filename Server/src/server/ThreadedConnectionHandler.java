@@ -4,6 +4,8 @@ import java.net.*;
 import java.io.*;
 
 public class ThreadedConnectionHandler extends Thread{
+	
+	private Object m = null;
 
 	private Socket clientSocket = null;				// Client socket object
     private ObjectInputStream is = null;			// Input stream
@@ -35,17 +37,18 @@ public class ThreadedConnectionHandler extends Thread{
     private boolean readCommand() {
         String s = null;
         try {
-            s = (String) is.readObject();
+            //s = (String) is.readObject();
+            m = (Object) is.readObject();
         } 
         catch (Exception e){    // catch a general exception
         	this.closeSocket();
             return false;
         }
-        System.out.println("01. <- Received a String object from the client (" + s + ").");
+        System.out.println("01. <- Received a String object from the client (" + m + ").");
         
         // At this point there is a valid String object
         // invoke the appropriate function based on the command 
-        if (s.equalsIgnoreCase("GetDate")){ 
+        if (m.equalsIgnoreCase("Send Command")){ 
             this.getDate(); 
         }       
         else { 

@@ -10,10 +10,11 @@ public class startUp {
     {
     	System.out.println("**. Java Client Application - EE402 OOP Module, DCU");
     	if(args.length==1){
-    		//Client theApp = new Client(args[0]);
+    		Client theApp = new Client(args[0]);
     		//Client theApp = new Client("127.0.0.1");
 		    //theApp.getDate();
-		    FrontEnd fe = new FrontEnd();
+		    theApp.sendCommand();
+		    //FrontEnd fe = new FrontEnd();
 		}
     	else
     	{
