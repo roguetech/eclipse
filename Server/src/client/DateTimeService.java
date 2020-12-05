@@ -1,4 +1,4 @@
-package server;
+package client;
 
 import java.util.Calendar;
 import java.util.Date;

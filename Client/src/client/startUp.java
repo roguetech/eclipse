@@ -13,6 +13,7 @@ public class startUp {
     		Client theApp = new Client(args[0]);
     		//Client theApp = new Client("127.0.0.1");
 		    //theApp.getDate();
+    		//System.out.println("send command");
 		    theApp.sendCommand();
 		    //FrontEnd fe = new FrontEnd();
 		}

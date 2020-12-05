@@ -18,6 +18,7 @@ public class Client {
 
 	// the constructor expects the IP address of the server - the port is fixed
     public Client(String serverIP) {
+    	System.out.println("test test test");
     	if (!connectToServer(serverIP)) {
     		System.out.println("XX. Failed to open socket connection to: " + serverIP);            
     	}
@@ -42,9 +43,27 @@ public class Client {
     }
     
     void sendCommand() {
-    	String test = "test command";
+    	
+    	//String test = "test command";
     	System.out.println("test command");
-    	this.send(test);
+    	Robot r = new Robot("blimpy");
+    	//System.out.println("starting x : " + r.startx);
+    	//System.out.println("starting y : " + r.starty);
+    	
+    	this.send(r);
+    	try {
+    		Robot r1 = (Robot) receive();
+    		System.out.println("05. <- The Server responded with: ");
+    		System.out.println("    <- " + r1.getName());
+    		os.close();
+    		
+    	}
+    	catch (Exception e){
+    		System.out.println(e);
+    		System.out.println("XX. There was an invalid object sent back from the server");
+    	}
+    	System.out.println("06. -- Disconnected from Server.");
+    	
     }
 
     void getDate() {
@@ -66,11 +85,12 @@ public class Client {
     private void send(Object o) {
 		try {
 		    System.out.println("02. -> Sending an object...");
+		    System.out.println("test " + o.getClass().getName());
 		    os.writeObject(o);
 		    os.flush();
 		} 
 	    catch (Exception e) {
-		    System.out.println("XX. Exception Occurred on Sending:" +  e.toString());
+		    System.out.println("XX. Exception Occurred on Sending: " +  e.toString());
 		}
     }
 
@@ -84,7 +104,7 @@ public class Client {
 		    System.out.println("04. <- Object received...");
 		} 
 	    catch (Exception e) {
-		    System.out.println("XX. Exception Occurred on Receiving:" + e.toString());
+		   System.out.println("XX. Exception Occurred on Receiving:" + e);
 		}
 		return o;
     }
