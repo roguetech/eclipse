@@ -1,7 +1,9 @@
 package client;
 
+import java.awt.*;
 import java.net.*;
 import java.io.*;
+import java.util.*;
 
 public class ThreadedConnectionHandler extends Thread{
 
@@ -9,13 +11,22 @@ public class ThreadedConnectionHandler extends Thread{
     private ObjectInputStream is = null;			// Input stream
     private ObjectOutputStream os = null;			// Output stream
     private DateTimeService theDateService;
-    private Robot robotUpdate;
+    public Robot robotUpdate, aRobot;
+    public int x, y, G=0, B=0, R=0;
+    private Map m;
+    private Graphics a, b;
+    //private Vector<Point> p;
+    //private Robot[] RobotArray;
+    //private Vector<Object> RobotVector;
     
 	// The constructor for the connection handler
-    public ThreadedConnectionHandler(Socket clientSocket) {
+    public ThreadedConnectionHandler(Socket clientSocket, Map m) {
         this.clientSocket = clientSocket;
+        this.m = m;
+        
+        //this.RobotVector = RobotVector;
         //Set up a service object to get the current date and time
-        theDateService = new DateTimeService();
+        //theDateService = new DateTimeService();
     }
 
     // Will eventually be the thread execution method - can't pass the exception back
@@ -89,13 +100,31 @@ public class ThreadedConnectionHandler extends Thread{
         // invoke the appropriate function based on the command 
         if(o.getClass().getName().equals("client.Robot"))
     	{	
-    		Robot aRobot = (Robot) o;
+    		aRobot = (Robot) o;
     		System.out.println(aRobot.getName());
-    		System.out.println("****** 1");
-    		//System.out.println("starting x : " + aRobot.startx);
-        	//System.out.println("starting y : " + aRobot.starty);
+    		if (aRobot.getName().equals("a")) {
+    			System.out.println("****** 1");
+        		System.out.println("starting x : " + aRobot.x);
+            	System.out.println("starting y : " + aRobot.y);
+            	this.x = aRobot.x;
+            	this.y = aRobot.y;
+            	this.G = 255;
+            	this.B = 0;
+            	this.m.addRobot(x, y, 0);
+            	this.m.move(x, y);
+    		} else if (aRobot.getName().equals("b")) {
+    			System.out.println("****** 1");
+        		System.out.println("starting x : " + aRobot.x);
+            	System.out.println("starting y : " + aRobot.y);
+            	this.x = aRobot.x;
+            	this.y = aRobot.y;
+            	this.G = 0;
+            	this.B = 255;
+            	this.m.addRobot(x, y, 1);
+            	this.m.move(x, y);
+    		}
     		
-    	}else { 
+    	} else { 
             this.sendError("Invalid command: " + o); 
         }
         /*try {
@@ -166,5 +195,10 @@ public class ThreadedConnectionHandler extends Thread{
             System.out.println("XX. " + e.getStackTrace());
         }
     }
+
+	public void updateMap() {
+		// TODO Auto-generated method stub
+		
+	}
 
 }

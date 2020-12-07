@@ -6,16 +6,25 @@ public class startUp {
 		// TODO Auto-generated constructor stub
 	}
 	
+	public static void connectToServer(String args){
+		
+	    //FrontEnd fe = new FrontEnd();
+	}
+	
 	public static void main(String args[]) 
     {
     	System.out.println("**. Java Client Application - EE402 OOP Module, DCU");
     	if(args.length==1){
-    		Client theApp = new Client(args[0]);
-    		//Client theApp = new Client("127.0.0.1");
-		    //theApp.getDate();
-    		//System.out.println("send command");
-		    theApp.sendCommand();
-		    //FrontEnd fe = new FrontEnd();
+    		Robot[] RobotArray = new Robot[2];
+    		String[] Names = {"a","b"};
+    		
+    		for(int i = 0; i < RobotArray.length; i++) {
+    			RobotArray[i] = new Robot(Names[i]);
+    			System.out.println(RobotArray[i].getName());
+    			FrontEnd f1 = new FrontEnd(args[0], RobotArray[i]);
+    		}
+    		//FrontEnd f2 = new FrontEnd(args[0]);
+    		//connectToServer(args[0]);
 		}
     	else
     	{
@@ -25,4 +34,5 @@ public class startUp {
     	}    
     	System.out.println("**. End of Application.");
     }
+	
 }

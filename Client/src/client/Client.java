@@ -15,6 +15,7 @@ public class Client {
     private Socket socket = null;
     private ObjectOutputStream os = null;
     private ObjectInputStream is = null;
+    public boolean status;
 
 	// the constructor expects the IP address of the server - the port is fixed
     public Client(String serverIP) {
@@ -33,39 +34,42 @@ public class Client {
     				+ " on port: " + this.socket.getPort());
     		System.out.println("    -> from local address: " + this.socket.getLocalAddress() 
     				+ " and port: " + this.socket.getLocalPort());
+    		this.status = true;
     	} 
         catch (Exception e) {
         	System.out.println("XX. Failed to Connect to the Server at port: " + portNumber);
-        	System.out.println("    Exception: " + e.toString());	
+        	System.out.println("    Exception: " + e.toString());
+        	this.status = false;
         	return false;
         }
 		return true;
     }
     
-    void sendCommand() {
+    void sendCommand(Object o) {
     	
     	//String test = "test command";
-    	System.out.println("test command");
-    	Robot r = new Robot("blimpy");
+    	//System.out.println("test command");
+    	Robot ro = (Robot) o;
     	//System.out.println("starting x : " + r.startx);
     	//System.out.println("starting y : " + r.starty);
+    	System.out.println("inside send " + ro.getName());
     	
-    	this.send(r);
+    	this.send(ro);
+    	
     	try {
     		Robot r1 = (Robot) receive();
     		System.out.println("05. <- The Server responded with: ");
     		System.out.println("    <- " + r1.getName());
-    		os.close();
+    		os.reset();
     		
     	}
     	catch (Exception e){
     		System.out.println(e);
     		System.out.println("XX. There was an invalid object sent back from the server");
     	}
-    	System.out.println("06. -- Disconnected from Server.");
-    	
+    	System.out.println("06. -- Disconnected from Server.");	
     }
-
+/*
     void getDate() {
     	String theDateCommand = "GetDate", theDateAndTime;
     	System.out.println("01. -> Sending Command (" + theDateCommand + ") to the server...");
@@ -80,7 +84,7 @@ public class Client {
     	}
     	System.out.println("06. -- Disconnected from Server.");
     }
-	
+	*/
     // method to send a generic object.
     private void send(Object o) {
 		try {
