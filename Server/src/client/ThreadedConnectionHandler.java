@@ -15,14 +15,17 @@ public class ThreadedConnectionHandler extends Thread{
     public int x, y, G=0, B=0, R=0;
     private Map m;
     private Graphics a, b;
+    Robot[] RC = new Robot[2]; 
+    private ThreadedServer ts;
     //private Vector<Point> p;
     //private Robot[] RobotArray;
     //private Vector<Object> RobotVector;
     
 	// The constructor for the connection handler
-    public ThreadedConnectionHandler(Socket clientSocket, Map m) {
+    public ThreadedConnectionHandler(Socket clientSocket, Map m, ThreadedServer ts) {
         this.clientSocket = clientSocket;
         this.m = m;
+        this.ts = ts;
         
         //this.RobotVector = RobotVector;
         //Set up a service object to get the current date and time
@@ -101,7 +104,14 @@ public class ThreadedConnectionHandler extends Thread{
         if(o.getClass().getName().equals("client.Robot"))
     	{	
     		aRobot = (Robot) o;
+    		System.out.println("p x: " + aRobot.x);
     		System.out.println(aRobot.getName());
+    		try {
+    			ts.updateArray(aRobot);
+    		} catch(Exception e) {
+    			System.out.println(e);
+    		}
+    		/*
     		if (aRobot.getName().equals("a")) {
     			System.out.println("****** 1");
         		System.out.println("starting x : " + aRobot.x);
@@ -109,21 +119,24 @@ public class ThreadedConnectionHandler extends Thread{
             	this.x = aRobot.x;
             	this.y = aRobot.y;
             	this.G = 255;
-            	this.B = 0;
-            	this.m.addRobot(x, y, 0);
-            	this.m.move(x, y);
+            	//RC[0] = aRobot;
+            	//m = new Map();
+            	//this.m.addRobot(x, y, 0, R, G, B);
+            	this.m.move(x, y, 0, RC);
     		} else if (aRobot.getName().equals("b")) {
     			System.out.println("****** 1");
         		System.out.println("starting x : " + aRobot.x);
             	System.out.println("starting y : " + aRobot.y);
             	this.x = aRobot.x;
             	this.y = aRobot.y;
-            	this.G = 0;
-            	this.B = 255;
-            	this.m.addRobot(x, y, 1);
-            	this.m.move(x, y);
+            	this.R = 255;
+            	//aRobot.R = 255;
+            	//RC[1] = aRobot;
+            	//m = new Map();
+            	//this.m.addRobot(x, y, 1);
+            	//this.m.move(x, y, 1, RC);
     		}
-    		
+    		*/
     	} else { 
             this.sendError("Invalid command: " + o); 
         }
@@ -156,8 +169,8 @@ public class ThreadedConnectionHandler extends Thread{
     	Robot update = new Robot("yippie");
     	System.out.println("****** 3 " + update);
     	this.send(update);
-    	System.out.println("*** Connection Closed ***");
-    	this.closeSocket();
+    	//System.out.println("*** Connection Closed ***");
+    	//this.closeSocket();
     }
     
     // Use our custom DateTimeService Class to get the date and time
@@ -172,7 +185,7 @@ public class ThreadedConnectionHandler extends Thread{
             System.out.println("02. -> Sending (" + o + ") to the client.");
             this.os.writeObject(o);
             this.os.flush();
-            System.out.println("closing");
+            System.out.println("##################################################");
         } 
         catch (Exception e) {
             System.out.println("XX." + e.getStackTrace());

@@ -6,7 +6,7 @@ import java.awt.*;
 import java.awt.event.*;
 import java.io.*;
 import java.net.*;
-import java.util.Vector;
+import java.util.*;
 
 public class ThreadedServer extends Frame implements ActionListener, WindowListener{
 
@@ -16,9 +16,10 @@ public class ThreadedServer extends Frame implements ActionListener, WindowListe
 	private static Map m;
 	public int x, y;
 	private Robot R1;
-	private Vector<Object> RobotVector;
+	private ArrayList<Robot> RobotList;
+	private ArrayList<String> indexOfArray;
 	
-	public ThreadedServer() {
+	public ThreadedServer() { 
 		
 		// GUI
 		
@@ -35,17 +36,18 @@ public class ThreadedServer extends Frame implements ActionListener, WindowListe
 		
 		// Right side of GUI
 		
-		status = new Label("Not Running", Label.CENTER);
+		status = new Label("Selected", Label.CENTER);
 		topPanel.add(status);
 		
 		refresh = new Button("Refresh");
 		refresh.addActionListener(this);
 		
-		m = new Map();
+		m = new Map(this);
 		
 		this.add(topPanel, BorderLayout.NORTH);
 		this.add(m, BorderLayout.CENTER);
 		this.add(bottomPanel, BorderLayout.SOUTH);
+		this.addWindowListener(this);
 		
 		this.pack();
 		this.setVisible(true);
@@ -54,6 +56,9 @@ public class ThreadedServer extends Frame implements ActionListener, WindowListe
 		
 		boolean listening = true;
         ServerSocket serverSocket = null;
+        
+        RobotList = new ArrayList<Robot>();
+        indexOfArray = new ArrayList<String>();
        
         // Set up the Server Socket
         try 
@@ -83,7 +88,7 @@ public class ThreadedServer extends Frame implements ActionListener, WindowListe
                 listening = false;   // end the loop - stop listening for further client requests
             }	
             
-            ThreadedConnectionHandler con = new ThreadedConnectionHandler(clientSocket, m);
+            ThreadedConnectionHandler con = new ThreadedConnectionHandler(clientSocket, m, this);
             con.start(); 
             
 
@@ -125,6 +130,54 @@ public class ThreadedServer extends Frame implements ActionListener, WindowListe
 			status.setText("Started");
 			status.repaint();
 		}
+	}
+	
+	public void updateArray(Robot r) {
+		//check vector for instance exists
+		System.out.println("%%%%%%%%%inside array method%%%%%%%%");
+		if(RobotList.size() == 0) {
+			RobotList.add(r);
+			System.out.println("The new Vector is: " + RobotList); 
+			String indexOfRobots = r.getName();
+			indexOfArray.add(indexOfRobots);
+			System.out.println(indexOfArray);
+		} else {
+			System.out.print("Array size 1:  " + RobotList.size());
+			//for(int i=0; i < RobotList.size(); i++) {
+				System.out.print("Array size for:  " + RobotList.size());
+				System.out.println("&&&&&&&inside for loop&&&&&");
+				//Robot vr = RobotList.get(i);
+				//String s1 = vr.getName();
+				String s2 = r.getName();
+				//System.out.println("s1: " + s1 + " s2: " + s2);
+				//System.out.println(vr.getName());
+				System.out.println(r.getName());
+				if (indexOfArray.contains(s2)) {
+					int i = indexOfArray.indexOf(s2);
+					System.out.println("%%%%%%%%%inside if loop%%%%%%%%");
+					//System.out.println("this is a test: " + vr.getName());
+					RobotList.set(i, r);
+					System.out.println(indexOfArray);
+					System.out.println("The new Vector is: " + RobotList); 
+				} else {
+					System.out.println("inside else: ");
+					System.out.print("Array size if :  " + RobotList.size());
+				// else add to vector
+					RobotList.add(r);
+					System.out.println("The new Vector is: " + RobotList); 
+					String indexOfRobots = r.getName();
+					indexOfArray.add(indexOfRobots);
+					System.out.println(indexOfArray);
+					System.out.println("The new Vector is: " + RobotList); 
+				}
+				
+			}
+		m.move(RobotList);
+		//}
+	}
+	
+	public void updateStatus(String update) {
+		status.setText(update);
 	}
 
 	public void windowOpened(WindowEvent e) {

@@ -25,6 +25,8 @@ public class FrontEnd extends Frame implements ActionListener, WindowListener {
 		this.x = R1.x;
 		this.y = R1.y;
 		
+		System.out.println("X: " + x + " Y: " + y);
+		
 		//this.x1 = R2.x;
 		//this.y1 = R2.y;
 		

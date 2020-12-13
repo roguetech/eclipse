@@ -8,13 +8,20 @@ public class Map extends Canvas implements MouseListener{
 	private int x, y, G, B, R;
 	public Vector<Robot> RobotVect;
 	private Robot aRobot;
+	ThreadedServer ts;
 	Vector<Point> points = new Vector<Point>(2);
+	Robot[] RC;
+	private ArrayList<Robot> RobotArray;
+	private Point p;
 	
-	public Map() {
+	public Map(ThreadedServer ts) {
 		this.setPreferredSize(new Dimension(300,300));
 		this.addMouseListener(this);
 		points.add(0, new Point(0,0));
 	    points.add(1, new Point(0,0));
+	    this.ts = ts;
+	    RobotArray = new ArrayList<Robot>();
+	    //Point p = new Point(x,y);
 		//this.x = x;
 		//this.y = y;
 	}
@@ -22,16 +29,20 @@ public class Map extends Canvas implements MouseListener{
 	public void addRobot(int x, int y, int i) {
 		//aRobot = o;
 		//this.points.addElement(new Point(x, y));
-		this.points.set(i, new Point(x, y));
+		//this.points.set(i, new Point(x, y));
 		
 	}
 	
-	public void move(int x, int y) {
+	public void move(ArrayList<Robot> RobotArray) {
+		this.RobotArray = RobotArray;
 		//for(int i=0; i < RobotVect.size(); i++) {
 		//	System.out.println(this.RobotVect.get(i));
 		//}
 		//this.x = x;
 		//this.y = y;
+		//this.points.set(i, new Point(x, y));
+		//this.RC = RC;
+		//this.ts.updateStatus("test");
 		//this.G = G;
 		//this.B = B;
 		//this.R = R;
@@ -59,26 +70,22 @@ public class Map extends Canvas implements MouseListener{
 	}
 	
 	public void paint(Graphics g) {
-		/*
-		for(int i=0; i < RobotVect.size(); i++) {
-			Robot j = RobotVect.get(i);
-			g.setColor(new Color(255,0,0));
-			g.fillOval(j.x, j.y, 5, 5);
-		}
-		*/
-		//Color c = new Color();
-		for(int i=0; i < points.size(); i++) {
-			Point p = points.get(i);
-			System.out.println(points);
-				g.setColor(new Color(255,0,0));
-				g.fillOval(p.x, p.y, 10, 10);
+		for(int i=0; i < RobotArray.size(); i++) {
+			//int R = RC[0].R;
+			System.out.println("test ");
+			Robot r = RobotArray.get(i);
+			System.out.println("map name: " + r.getName());
+			//p = r.getCorrds();
+			//System.out.println("test " + p.x);
+			g.setColor(new Color(R,G,B));
+			g.fillOval(r.x, r.y, 10, 10);
 		}
 	}
 	
 	@Override
 	public void mouseClicked(MouseEvent e) {
-		// TODO Auto-generated method stub
-		
+		//String update = RC[0].getName();
+		//ts.updateStatus(update);
 	}
 
 	@Override
