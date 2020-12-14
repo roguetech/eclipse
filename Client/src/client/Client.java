@@ -1,9 +1,3 @@
-/* The Client Class - Written by Derek Molloy for the EE402 Module
- * See: ee402.eeng.dcu.ie
- * 
- * 
- */
-
 package client;
 
 import java.net.*;
@@ -16,13 +10,15 @@ public class Client {
     private ObjectOutputStream os = null;
     private ObjectInputStream is = null;
     public boolean status;
+    private FrontEnd fe;
 
 	// the constructor expects the IP address of the server - the port is fixed
-    public Client(String serverIP) {
+    public Client(String serverIP, FrontEnd fe) {
     	System.out.println("test test test");
     	if (!connectToServer(serverIP)) {
     		System.out.println("XX. Failed to open socket connection to: " + serverIP);            
     	}
+    	this.fe = fe;
     }
 
     private boolean connectToServer(String serverIP) {
@@ -47,17 +43,17 @@ public class Client {
     
     void sendCommand(Object o) {
     	
-    	//String test = "test command";
-    	//System.out.println("test command");
     	Robot ro = (Robot) o;
-    	//System.out.println("starting x : " + r.startx);
-    	//System.out.println("starting y : " + r.starty);
-    	System.out.println("inside send " + ro.getName());
-    	
     	this.send(ro);
     	
     	try {
     		Robot r1 = (Robot) receive();
+    		if(r1.getWarning() == true) {
+    			System.out.println("&&&&& WARNING &&&&&");
+    			fe.updateWarning(true);
+    		} else {
+    			fe.updateWarning(false);
+    		}
     		System.out.println("05. <- The Server responded with: ");
     		System.out.println("    <- " + r1.getName());
     		os.reset();
@@ -69,27 +65,16 @@ public class Client {
     	}
     	System.out.println("06. -- Disconnected from Server.");	
     }
-/*
-    void getDate() {
-    	String theDateCommand = "GetDate", theDateAndTime;
-    	System.out.println("01. -> Sending Command (" + theDateCommand + ") to the server...");
-    	this.send(theDateCommand);
-    	try{
-    		theDateAndTime = (String) receive();
-    		System.out.println("05. <- The Server responded with: ");
-    		System.out.println("    <- " + theDateAndTime);
-    	}
-    	catch (Exception e){
-    		System.out.println("XX. There was an invalid object sent back from the server");
-    	}
-    	System.out.println("06. -- Disconnected from Server.");
-    }
-	*/
+    
     // method to send a generic object.
     private void send(Object o) {
+    	Robot ro = (Robot) o;
 		try {
 		    System.out.println("02. -> Sending an object...");
 		    System.out.println("test " + o.getClass().getName());
+		    ro.setTime();
+		    System.out.println(ro.getTime());
+		    fe.updateTime();
 		    os.writeObject(o);
 		    os.flush();
 		} 

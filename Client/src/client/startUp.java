@@ -6,25 +6,20 @@ public class startUp {
 		// TODO Auto-generated constructor stub
 	}
 	
-	public static void connectToServer(String args){
-		
-	    //FrontEnd fe = new FrontEnd();
-	}
-	
 	public static void main(String args[]) 
     {
-    	System.out.println("**. Java Client Application - EE402 OOP Module, DCU");
+    	System.out.println("Java Client Application");
     	if(args.length==1){
-    		Robot[] RobotArray = new Robot[2];
-    		String[] Names = {"a","b"};
+    		Robot[] RobotArray = new Robot[5];
+    		String[] Names = {"ann","barry","charlie","Dave","Eddie"};
+    		int size = 10;
     		
     		for(int i = 0; i < RobotArray.length; i++) {
-    			RobotArray[i] = new Robot(Names[i]);
+    			RobotArray[i] = new Robot(Names[i], size);
     			System.out.println(RobotArray[i].getName());
     			FrontEnd f1 = new FrontEnd(args[0], RobotArray[i]);
     		}
-    		//FrontEnd f2 = new FrontEnd(args[0]);
-    		//connectToServer(args[0]);
+
 		}
     	else
     	{

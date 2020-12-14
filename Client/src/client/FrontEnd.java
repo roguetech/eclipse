@@ -1,34 +1,32 @@
 package client;
 
 import java.awt.*;
+import java.util.Random;
 import java.awt.event.*;
 
-public class FrontEnd extends Frame implements ActionListener, WindowListener {
-	private Button forward, back, left, right, Connect;
-	private Label status, warning, speedl;
+public class FrontEnd extends Frame implements ActionListener, WindowListener, Runnable {
+	private Button forward, back, left, right, Connect, teleport;
+	private Label status, warning, speedl, lastUpdate;
 	private Choice speedc;
 	private Map m;
 	private int x, y, speed;
-	private Robot R1;
+	public Robot R1;
 	private String args, s;
-	private boolean stat, conn;
-	//private boolean north, south, east, west;
+	private boolean stat, conn, running, cc=false;
+	private Thread thread;
 	
 	public FrontEnd(String args, Robot aRobot) {
 		super("Robot Application");
 		
 		this.args = args;
-		//R1 = new Robot("blimpy");
-		//R2 = new Robot("holden");
 		R1 = aRobot;
+		R1.setTime();
+		R1.color();
 		
 		this.x = R1.x;
 		this.y = R1.y;
-		
-		System.out.println("X: " + x + " Y: " + y);
-		
-		//this.x1 = R2.x;
-		//this.y1 = R2.y;
+
+		this.thread = new Thread(this);
 		
 		// Create Display Panels
 		this.setLayout(new FlowLayout());
@@ -37,11 +35,13 @@ public class FrontEnd extends Frame implements ActionListener, WindowListener {
 		Panel connect = new Panel(new FlowLayout());
 		Panel direction = new Panel(new BorderLayout());
 		Panel speed = new Panel(new FlowLayout());
+		Panel warn = new Panel(new FlowLayout());
+		
 		
 		this.addWindowListener(this);
 		
-		leftp.setSize(new Dimension(100, 100));
-		rightp.setSize(new Dimension(640, 480));
+		leftp.setSize(new Dimension(400, 400));
+		rightp.setPreferredSize(new Dimension(640, 480));
 		
 		//Add Buttons and Labels
 		
@@ -82,16 +82,24 @@ public class FrontEnd extends Frame implements ActionListener, WindowListener {
 		Connect = new Button("Connect");
 		connect.add(Connect);
 		Connect.addActionListener(this);
+		teleport = new Button("Teleport");
+		connect.add(teleport);
+		teleport.addActionListener(this);
+		warning = new Label("");
+		connect.add(warning);
 		
 		rightp.add(connect, BorderLayout.NORTH);
 		
 		
-		warning = new Label("Warning", Label.CENTER);
-		rightp.add(warning, BorderLayout.SOUTH);
+		//warning = new Label("Warning");
+		//rightp.add(warning, BorderLayout.NORTH);
+		
+		lastUpdate = new Label("Last Update: ", Label.RIGHT);
+		rightp.add(lastUpdate, BorderLayout.SOUTH);
 		
 		// Setup Map
 		
-		m = new Map(x, y);
+		m = new Map(R1.x, R1.y, R1.size, R1.R, R1.G, R1.B);
 		
 		rightp.add(m, BorderLayout.CENTER);
 		
@@ -105,7 +113,7 @@ public class FrontEnd extends Frame implements ActionListener, WindowListener {
 	
 	public boolean connectToServer(String args) {
 		System.out.println("inside connect");
-		Client theApp = new Client(args);
+		Client theApp = new Client(args, this);
 		
 		if (theApp.status == true) {
 			stat = true;
@@ -114,12 +122,6 @@ public class FrontEnd extends Frame implements ActionListener, WindowListener {
 		}
 		
 		System.out.println("*********** Status: " + stat);
-		//R1.setName("Holder");
-		//Client theApp = new Client("127.0.0.1");
-	    //theApp.getDate();
-		//System.out.println("send command");
-		System.out.println("test command");
-    	//Robot r = new Robot("blimpy");
 		System.out.println("**************************");
 		System.out.println("Robot sending: " + R1.getName());
 		System.out.println("**************************");
@@ -129,41 +131,55 @@ public class FrontEnd extends Frame implements ActionListener, WindowListener {
 	
 	public void updateLocation(int x, int y) {
 		System.out.println("*** Updating Location ***");
-	    Client theApp1 = new Client(args);
+	    Client theApp1 = new Client(args, this);
 	    R1.updateLocation(x, y);
     	theApp1.sendCommand(R1);
 	}
 	
-	public void updateYLocation(int y) {
-		System.out.println("*** Updating Location ***");
-	    Client theApp1 = new Client(args);
-    	R1.updateLocation(x, y);
-    	theApp1.sendCommand(R1);
+	public void updateTime() {
+		lastUpdate.setText("Updated: " + R1.getTime());
+	}
+	
+	public void updateWarning(boolean cc) {
+		if(cc = true) {
+			warning.setText("Warning Collison Close");
+		} else if (cc = false) {
+			warning.setText("Clear");
+		}
+	}
+	
+	public void run() {
+		while(running) {
+			System.out.println("Thread update");
+			try {
+				R1.setTime();
+				Client theApp1 = new Client(args, this);
+				theApp1.sendCommand(R1);
+				Thread.sleep(30000);
+			} catch(InterruptedException e) {
+				System.out.println(e);
+			}
+		}
 	}
 
 	public void actionPerformed(ActionEvent e) {
 		// Set Speed
 		s = speedc.getItem(speedc.getSelectedIndex());
 		if (s.equals("Low")) {
-			this.speed = 5;
-		} else if (s.equals("Medium")){
 			this.speed = 10;
-		} else if (s.equals("High")) {
+		} else if (s.equals("Medium")){
 			this.speed = 20;
+		} else if (s.equals("High")) {
+			this.speed = 30;
 		}
 		
 		if (e.getSource().equals(forward)) {
+			
 			this.y = y - speed;
-			//y = m.getYLoc() - 10;
-			System.out.println("x: " + x + " Y: " + y);
-			//m.setLocation(x, y);
 			m.move(x, y);
 			updateLocation(x, y);
 		} else if (e.getSource().equals(back)) {
 			this.y = y + speed;
-			//y = m.getYLoc();
-			System.out.println("x: " + x + " Y: " + y);
-			//m.setLocation(x, y);
 			m.move(x, y);
 			updateLocation(x, y);
 		} else if (e.getSource().equals(right)) {
@@ -180,10 +196,20 @@ public class FrontEnd extends Frame implements ActionListener, WindowListener {
 			System.out.println("*********** Status 2: " + stat);
 			if (stat == false) {
 				status.setText("Disconnected");
+				running = false;
 			} else if (stat == true) {
 				status.setText("Connected");
+				running = true;
+				this.thread.start();
 			}
-		} 
+		} else if (e.getSource().equals(teleport)) {
+			System.out.println("teleport pushed");
+			Random rand = new Random();
+			this.x = rand.nextInt(300) + 1;
+			this.y = rand.nextInt(300) + 1;
+			m.move(x, y);
+			updateLocation(x, y);
+		}
 		
 	}
 

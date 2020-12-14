@@ -11,13 +11,15 @@ import java.util.*;
 public class ThreadedServer extends Frame implements ActionListener, WindowListener{
 
 	private static int portNumber = 5050;
-	private Button refresh;
-	private Label status;
+	private Button refresh, party;
+	private Label status, lastUpdate, safetyMargin;
+	private TextField safety;
 	private static Map m;
 	public int x, y;
 	private Robot R1;
 	private ArrayList<Robot> RobotList;
 	private ArrayList<String> indexOfArray;
+	private Boolean warning = false;
 	
 	public ThreadedServer() { 
 		
@@ -31,13 +33,27 @@ public class ThreadedServer extends Frame implements ActionListener, WindowListe
 		
 		this.addWindowListener(this);
 		
-		topPanel.setSize(new Dimension(100, 100));
-		bottomPanel.setSize(new Dimension(640, 480));
+		this.setPreferredSize(new Dimension(400, 400));
+		topPanel.setSize(new Dimension(400, 400));
+		bottomPanel.setSize(new Dimension(400, 400));
 		
 		// Right side of GUI
 		
-		status = new Label("Selected", Label.CENTER);
+		status = new Label("", Label.CENTER);
 		topPanel.add(status);
+		
+		safetyMargin = new Label("Safety Margin: ", Label.CENTER);
+		topPanel.add(safetyMargin);
+		
+		safety = new TextField("10");
+		topPanel.add(safety);
+		
+		party = new Button("Party Mode");
+		topPanel.add(party);
+		party.addActionListener(this);
+		
+		lastUpdate = new Label("Update", Label.CENTER);
+		bottomPanel.add(lastUpdate);
 		
 		refresh = new Button("Refresh");
 		refresh.addActionListener(this);
@@ -106,74 +122,72 @@ public class ThreadedServer extends Frame implements ActionListener, WindowListe
         }
     }
 	
-	public void updateXLocation() {
-		System.out.println("*** Updating Location ***");
-	    //Client theApp1 = new Client(args);
-	    R1.updateLocation(x, y);
-	    R1.getLocation();
-	    m.move(x,y);
-    	//theApp1.sendCommand(R1);
+	 public void collisionDetection(Object o) {
+		 Robot cc = (Robot) o;
+			for(int i=0; i < RobotList.size(); i++) {
+				Robot r = RobotList.get(i);
+				if(cc.getName() != r.getName()) {
+					int locx = cc.x - (r.x + Integer.parseInt(safety.getText()));
+					int locy = cc.y - (r.y + Integer.parseInt(safety.getText()));
+					locx = Math.abs(locx);
+					locy = Math.abs(locy);
+					if(locx <= Integer.parseInt(safety.getText()) ) {
+						if(locy <= Integer.parseInt(safety.getText()) ) {
+							System.out.println("Warning:" + cc.x + " " + r.x + " locx " + locx + " locy " + locy);
+							warning = true;
+						}
+					} else {
+						System.out.println("***** No Warning *****");
+						warning = false;
+					}
+				}
+			}
+	}
+	 
+	public boolean checkCollision() {
+		if (warning == true) {
+			return true;
+		} else {
+			return false;
+		}
 	}
 	
 	public void updateLocation() {
 		System.out.println("*** Updating Location ***");
-	    //Client theApp1 = new Client(args);
     	R1.updateLocation(x, y);
-    	//theApp1.sendCommand(R1);
 	}
 	
 	//updateMap.start();
 
 	public void actionPerformed(ActionEvent e) {
 		if(e.getSource().equals(refresh)) {
-			//ts = new ThreadedServer();
 			status.setText("Started");
 			status.repaint();
+		} else if(e.getSource().equals(party)) {
+			m.partyMode();
 		}
 	}
 	
 	public void updateArray(Robot r) {
-		//check vector for instance exists
-		System.out.println("%%%%%%%%%inside array method%%%%%%%%");
 		if(RobotList.size() == 0) {
 			RobotList.add(r);
-			System.out.println("The new Vector is: " + RobotList); 
 			String indexOfRobots = r.getName();
 			indexOfArray.add(indexOfRobots);
-			System.out.println(indexOfArray);
 		} else {
-			System.out.print("Array size 1:  " + RobotList.size());
-			//for(int i=0; i < RobotList.size(); i++) {
-				System.out.print("Array size for:  " + RobotList.size());
-				System.out.println("&&&&&&&inside for loop&&&&&");
-				//Robot vr = RobotList.get(i);
-				//String s1 = vr.getName();
-				String s2 = r.getName();
-				//System.out.println("s1: " + s1 + " s2: " + s2);
-				//System.out.println(vr.getName());
-				System.out.println(r.getName());
-				if (indexOfArray.contains(s2)) {
-					int i = indexOfArray.indexOf(s2);
-					System.out.println("%%%%%%%%%inside if loop%%%%%%%%");
-					//System.out.println("this is a test: " + vr.getName());
-					RobotList.set(i, r);
-					System.out.println(indexOfArray);
-					System.out.println("The new Vector is: " + RobotList); 
-				} else {
-					System.out.println("inside else: ");
-					System.out.print("Array size if :  " + RobotList.size());
-				// else add to vector
-					RobotList.add(r);
-					System.out.println("The new Vector is: " + RobotList); 
-					String indexOfRobots = r.getName();
-					indexOfArray.add(indexOfRobots);
-					System.out.println(indexOfArray);
-					System.out.println("The new Vector is: " + RobotList); 
-				}
-				
+			String s2 = r.getName();
+			System.out.println(r.getName());
+			if (indexOfArray.contains(s2)) {
+				int i = indexOfArray.indexOf(s2);
+				RobotList.set(i, r);
+			} else {
+				RobotList.add(r);
+				String indexOfRobots = r.getName();
+				indexOfArray.add(indexOfRobots);
 			}
+				
+		}
+		lastUpdate.setText("Updated: " + r.getTime());
 		m.move(RobotList);
-		//}
 	}
 	
 	public void updateStatus(String update) {
